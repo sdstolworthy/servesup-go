@@ -39,6 +39,7 @@ var methodMap = map[string]func(r *gin.Engine, route definition.Route){
 	},
 }
 
+// RunServer accepts a server definition and intantiates an Http server that matches the definition spec
 func RunServer(definition *definition.Definition) {
 	router := gin.Default()
 

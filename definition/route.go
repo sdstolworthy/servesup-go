@@ -2,6 +2,7 @@ package definition
 
 import "fmt"
 
+// Route is a single route definition. It contains the necessary information to instantiate a route listener in the server package
 type Route struct {
 	Path       string            `json:"path"`
 	StatusCode int               `json:"statusCode"`
