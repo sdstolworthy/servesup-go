@@ -5,9 +5,19 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 
 	"github.com/sdstolworthy/servesup/definition"
 )
+
+func resolveFilePath(filePath string) (*string, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, &DoesNotExistError{s: "Could not get current working directory"}
+	}
+	resolvedPath := path.Join(cwd, filePath)
+	return &resolvedPath, nil
+}
 
 func loadJSONFile(path string) *definition.Definition {
 	jsonFile, err := os.Open(path)
@@ -31,7 +41,9 @@ func (e *DoesNotExistError) Error() string {
 }
 
 func ParseDefinitionFromPath(path string) (*definition.Definition, error) {
-	_, err := os.Stat(path)
+	resolvedPath, _ := resolveFilePath(path)
+	fmt.Println(*resolvedPath)
+	_, err := os.Stat(*resolvedPath)
 	if os.IsNotExist(err) {
 		return nil, &DoesNotExistError{s: fmt.Sprintf("%v does not exist", path)}
 	}
