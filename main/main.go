@@ -5,6 +5,7 @@ import (
 
 	"github.com/sdstolworthy/servesup/cmdparse"
 	"github.com/sdstolworthy/servesup/definitionparser"
+	"github.com/sdstolworthy/servesup/server"
 )
 
 func main() {
@@ -15,5 +16,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(definition)
+	// fmt.Println(definition)
+	server.RunServer(definition)
 }

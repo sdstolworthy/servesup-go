@@ -4,7 +4,7 @@ import "fmt"
 
 type Route struct {
 	Path       string   `json:"path"`
-	StatusCode int32    `json:"statusCode"`
+	StatusCode int      `json:"statusCode"`
 	Fixture    string   `json:"fixture"`
 	Methods    []string `json:"methods"`
 }

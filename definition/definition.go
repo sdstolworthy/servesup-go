@@ -3,7 +3,7 @@ package definition
 import "fmt"
 
 type Definition struct {
-	Port   int32   `json:"port"`
+	Port   int     `json:"port"`
 	Routes []Route `json:"routes"`
 }
 
