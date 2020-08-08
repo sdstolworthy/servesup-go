@@ -10,17 +10,29 @@ import (
 	"github.com/sdstolworthy/servesup/definition"
 )
 
-func resolveFilePath(filePath string) (*string, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, &DoesNotExistError{s: "Could not get current working directory"}
-	}
-	resolvedPath := path.Join(cwd, filePath)
+func resolveFilePath(basePath string, filePath string) (*string, error) {
+	resolvedPath := path.Join(basePath, filePath)
 	return &resolvedPath, nil
 }
 
-func loadJSONFile(path string) *definition.Definition {
-	jsonFile, err := os.Open(path)
+func parseRouteFixture(route definition.Route, definitionFilePath string) map[string]interface{} {
+	if route.Fixture != nil {
+		return *route.Fixture
+	} else if route.FixturePath != "" {
+		fixturePath, _ := resolveFilePath(definitionFilePath, route.FixturePath)
+		jsonFile, _ := os.Open(*fixturePath)
+		defer jsonFile.Close()
+		byteValue, _ := ioutil.ReadAll(jsonFile)
+		fixture := map[string]interface{}{}
+		json.Unmarshal(byteValue, &fixture)
+		fmt.Println(*fixturePath)
+		return fixture
+	}
+	return map[string]interface{}{}
+}
+
+func loadJSONFile(definitionPath string) *definition.Definition {
+	jsonFile, err := os.Open(definitionPath)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -29,6 +41,10 @@ func loadJSONFile(path string) *definition.Definition {
 	var definition definition.Definition
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	json.Unmarshal(byteValue, &definition)
+	for index, route := range definition.Routes {
+		fixture := parseRouteFixture(route, path.Dir(definitionPath))
+		definition.Routes[index].Fixture = &fixture
+	}
 	return &definition
 }
 
@@ -41,12 +57,12 @@ func (e *DoesNotExistError) Error() string {
 }
 
 func ParseDefinitionFromPath(path string) (*definition.Definition, error) {
-	resolvedPath, _ := resolveFilePath(path)
-	fmt.Println(*resolvedPath)
+	basePath, _ := os.Getwd()
+	resolvedPath, _ := resolveFilePath(basePath, path)
 	_, err := os.Stat(*resolvedPath)
 	if os.IsNotExist(err) {
 		return nil, &DoesNotExistError{s: fmt.Sprintf("%v does not exist", path)}
 	}
-	definition := loadJSONFile(path)
+	definition := loadJSONFile(*resolvedPath)
 	return definition, nil
 }

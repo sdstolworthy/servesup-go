@@ -2,11 +2,19 @@
   "port": 3000,
   "routes": [
     {
+      "path": "/pathFixture",
+      "statusCode": 401,
+      "fixturePath": "./example-fixture.json",
+      "methods": [
+        "get"
+      ]
+    },
+    {
       "path": "/app",
       "statusCode": 401,
-      "fixture": "./example-fixture.json",
+      "fixturePath": "./example-fixture.json",
       "methods": [
-        "get",
+        "delete",
         "post"
       ]
     },
@@ -14,10 +22,11 @@
       "path": "/app",
       "statusCode": 200,
       "fixture": {
-        "john": "doe"
+        "john": "doe",
+        "people": ["stacy"]
       },
       "methods": [
-        "delete",
+        "get",
         "head"
       ]
     },

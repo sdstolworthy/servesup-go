@@ -11,7 +11,13 @@ import (
 
 func createResponseHandler(handlerMethod func(relativePath string, handlers ...gin.HandlerFunc) gin.IRoutes, route definition.Route) gin.IRoutes {
 	return handlerMethod(route.Path, func(c *gin.Context) {
-		c.JSON(route.StatusCode, gin.H{"ping": "pong"})
+		var returnJson *map[string]interface{}
+		if route.Fixture != nil {
+			returnJson = route.Fixture
+		} else {
+			returnJson = &map[string]interface{}{}
+		}
+		c.JSON(route.StatusCode, returnJson)
 	})
 }
 
