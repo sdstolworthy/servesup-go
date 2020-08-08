@@ -22,7 +22,6 @@
       ]
     },
     {
-      "path": "*",
       "statusCode": 301,
       "headers": {
         "X-My-Custom-Header": "custom header"

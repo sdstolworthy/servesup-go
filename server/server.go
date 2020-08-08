@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -30,20 +31,33 @@ var methodMap = map[string]func(r *gin.Engine, route definition.Route){
 	"options": func(r *gin.Engine, route definition.Route) {
 		createResponseHandler(r.OPTIONS, route)
 	},
+	"patch": func(r *gin.Engine, route definition.Route) {
+		createResponseHandler(r.PATCH, route)
+	},
+	"put": func(r *gin.Engine, route definition.Route) {
+		createResponseHandler(r.PUT, route)
+	},
 }
 
 func RunServer(definition *definition.Definition) {
-	r := gin.Default()
+	router := gin.Default()
+
 	for _, route := range definition.Routes {
-		if methodMap == nil {
-			r.Any(route.Path)
+		if route.Path == "" || route.Path == "*" || route.Path == "/*" {
+			router.NoRoute(func(c *gin.Context) {
+				c.JSON(route.StatusCode, gin.H{"no": "route"})
+			})
+			continue
+		}
+		if len(route.Methods) == 0 {
+			router.Any(route.Path)
 			continue
 		}
 		for _, method := range route.Methods {
-			if val, ok := methodMap[method]; ok {
-				val(r, route)
+			if val, ok := methodMap[strings.ToLower(method)]; ok {
+				val(router, route)
 			}
 		}
 	}
-	r.Run(fmt.Sprintf(":%v", definition.Port))
+	router.Run(fmt.Sprintf(":%v", definition.Port))
 }

@@ -16,6 +16,5 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	// fmt.Println(definition)
 	server.RunServer(definition)
 }
