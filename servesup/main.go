@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/sdstolworthy/servesup/cmdparse"
+	"github.com/sdstolworthy/servesup/definitionparser"
+)
 
 func main() {
-	fmt.Println("hello")
+	config := cmdparse.ParseCmdOptions()
+
+	definition, err := definitionparser.ParseDefinitionFromPath(config.Definition)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(definition)
 }
